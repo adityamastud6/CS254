@@ -1,47 +1,66 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-bool hasLoop = false;
-
-void DFS(vector<vector<int>>& graph, vector<bool>& visited, int u, vector<bool>& inStack) {
-    visited[u] = true;
-    inStack[u] = true;
-
-    for (int v : graph[u]) {
-        if (!visited[v]) {
-            DFS(graph, visited, v, inStack);
-        } else if (inStack[v]) {
-            hasLoop = true;
-            return;
+class Solution {
+  private:
+    bool checkCycle(int node, vector < int > adj[], int vis[], int dfsVis[]) {
+      vis[node] = 1;
+      dfsVis[node] = 1;
+      for (auto it: adj[node]) {
+        if (!vis[it]) {
+          if (checkCycle(it, adj, vis, dfsVis)) return true;
+        } else if (dfsVis[it]) {
+          return true;
         }
+      }
+      dfsVis[node] = 0;
+      return false;
     }
+  public:
+    bool isCyclic(int N, vector < int > adj[]) {
+      int vis[N], dfsVis[N];
+     
+      for(int i = 0; i < N; i++){
+        vis[i] = 0;
+        dfsVis[i] = 0;
+      }
 
-    inStack[u] = false;
+      for (int i = 0; i < N; i++) {
+        if (!vis[i]) {
+          // cout << i << endl; 
+          if (checkCycle(i, adj, vis, dfsVis)) {
+             // cout << i << endl;
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+};
+
+void addEdge(vector < int > adj[], int u, int v) {
+  adj[u].push_back(v);
 }
 
 int main() {
-    int n = 5;
-    vector<pair<int, int>> edges = {{1, 2}, {2, 3}, {3, 1}, {2, 4}, {3, 5}, {4, 5}, {5, 2}};
 
-    vector<vector<int>> graph(n + 1);
-    vector<bool> visited(n + 1, false);
-    vector<bool> inStack(n + 1, false);
+  int V = 6;
 
-    for (auto x : edges) {
-        graph[x.first].push_back(x.second);
-    }
+  vector < int > adj[V];
+  addEdge(adj, 0, 1);
+  addEdge(adj, 1, 2);
+  addEdge(adj, 1, 5);
+  addEdge(adj, 2, 3);
+  addEdge(adj, 3, 4);
+  addEdge(adj, 4, 0);
+  addEdge(adj, 4, 1);
+  
 
-    for (int i = 1; i <= n; ++i) {
-        if (!visited[i]) {
-            DFS(graph, visited, i, inStack);
-        }
-    }
+  Solution obj;
+  if (obj.isCyclic(V, adj))
+    cout << "Cycle Detected" << "\n";
+  else
+    cout << "No Cycle Detected";
 
-    if (hasLoop) {
-        cout << "Graph has a loop"<<endl;
-    } else {
-        cout << "Graph does not have a loop"<<endl;
-    }
-
-    return 0;
+  return 0;
 }
