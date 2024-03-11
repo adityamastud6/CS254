@@ -1,34 +1,58 @@
 #include <bits/stdc++.h>
+
 using namespace std;
 
-int main() {
-    int n; cin>>n;
-    queue<int> Q;
-    vector<int> deg(n+1), topological_sort;
- 
-    vector<vector<int>> adj(n+1);
-    for(int i=0;i<n-1;i++){
-        int x,y;cin>>x>>y;
-        adj[x].push_back(y);
+class Solution {
+  void findTopoSort(int node, vector < int > & vis, stack < int > & st, vector < int > adj[]) {
+    vis[node] = 1;
+
+    for (auto it: adj[node]) {
+      if (!vis[it]) {
+        findTopoSort(it, vis, st, adj);
+      }
     }
-    
-    for(int i = 1; i < n+1; ++i) 
-        for(int x : adj[i]) deg[x]++;
-    
-    for(int i = 1; i < n+1; ++i) 
-        if(!deg[i]) Q.push(i);
-        
-        
-    while(!Q.empty()) {
-        int node = Q.front();
-        Q.pop();
-        topological_sort.push_back(node);
-        for(int child : adj[node]) {
-            deg[child]--;
-            if(!deg[child])
-                Q.push(child);           
+    st.push(node);
+  }
+  public:
+    vector < int > topoSort(int N, vector < int > adj[]) {
+      stack < int > st;
+      vector < int > vis(N, 0);
+      for (int i = 0; i < N; i++) {
+        if (vis[i] == 0) {
+          findTopoSort(i, vis, st, adj);
         }
+      }
+      vector < int > topo;
+      while (!st.empty()) {
+        topo.push_back(st.top());
+        st.pop();
+      }
+      return topo;
+
     }
-    
-    for(int x : topological_sort) cout << x << ' ';
+};
+
+// { Driver Code Starts.
+int main() {
+
+  int N = 6;
+
+  vector < int > adj[5 + 1];
+
+  adj[5].push_back(2);
+  adj[5].push_back(0);
+  adj[4].push_back(0);
+  adj[4].push_back(1);
+  adj[2].push_back(3);
+  adj[3].push_back(1);
+
+  Solution obj;
+  vector < int > res = obj.topoSort(6, adj);
+
+  cout << "Toposort of the given graph is:" << endl;
+  for (int i = 0; i < res.size(); i++) {
+    cout << res[i] << " ";
+  }
+
+  return 0;
 }
