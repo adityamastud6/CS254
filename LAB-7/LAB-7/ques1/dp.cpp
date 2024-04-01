@@ -1,26 +1,35 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    int n, WeightLimit;
-    cin >> n >> WeightLimit;
-    vector<int> weights(n), values(n);
-    for (int i = 0; i < n; i++) {
-        cin >> values[i] >> weights[i];
+int knapsackUtil(vector<int>& wt, vector<int>& val, int ind, int W, vector<vector<int>>& dp) {
+    if (ind == 0 || W == 0) {
+        return 0;
     }
 
-    vector<vector<int>> dp(n + 1, vector<int>(WeightLimit + 1, 0));
-    for (int i = 1; i <= n; i++) {
-        for (int w = 1; w <= WeightLimit; w++) {
-            if (weights[i - 1] <= w)
-                dp[i][w] = max(values[i - 1] + dp[i - 1][w - weights[i - 1]], dp[i - 1][w]);
-            else
-                dp[i][w] = dp[i - 1][w];
-        }
+    if (dp[ind][W] != -1) {
+        return dp[ind][W];
     }
 
-    cout << "Maximum value: " << dp[n][WeightLimit] << endl;
-    return 0;
+    int notTaken = knapsackUtil(wt, val, ind - 1, W, dp);
+    int taken = 0;
+    if (wt[ind] <= W) {
+        taken = val[ind] + knapsackUtil(wt, val, ind - 1, W - wt[ind], dp);
+    }
+    return dp[ind][W] = max(notTaken, taken);
 }
 
-// T.C. - O(nW)
+int knapsack(vector<int>& wt, vector<int>& val, int n, int W) {
+    vector<vector<int>> dp(n, vector<int>(W + 1, -1));
+    return knapsackUtil(wt, val, n - 1, W, dp);
+}
+
+int main() {
+    vector<int> wt = {1, 2, 4, 5};
+    vector<int> val = {5, 4, 8, 6};
+    int W = 5;
+    int n = wt.size();
+
+    cout << "The Maximum value of items is " << knapsack(wt, val, n, W);
+
+    return 0;
+}
