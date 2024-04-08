@@ -2,6 +2,26 @@
 #include <vector>
 #include <fstream>
 
+vector<int> intersectionSortedArrays(const vector<int>& A, const vector<int>& B) {
+    vector<int> c;
+    unordered_map<int, int> countMap;
+
+    // Update count for elements in array A
+    for (int num : A) {
+        countMap[num]++;
+    }
+
+    // Find intersection by iterating over array B
+    for (int num : B) {
+        if (countMap[num] > 0) {
+            c.push_back(num);
+            countMap[num] = 0; // Mark as added to avoid duplicates
+        }
+    }
+
+    return c;
+}
+
 void merge(std::vector<int> &A, int start, int mid, int end)
 {
     int p = start, q = mid + 1;
