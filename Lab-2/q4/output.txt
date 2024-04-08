@@ -1,0 +1,2 @@
+First Min: 34
+Second Min: 49
